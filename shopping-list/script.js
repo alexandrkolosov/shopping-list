@@ -57,6 +57,19 @@ function removeItem (evt) {
     };
 }
 
+function filterItems(evt) {
+    const items = itemList.querySelectorAll('li');
+    const text = evt.target.value.toLowerCase();
+    items.forEach( item => {
+        const itemName = item.firstChild.textContent.toLowerCase();
+        if (itemName.indexOf(text) != -1) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
 function clearItems() {
     while (itemList.firstChild) {
         itemList.removeChild(itemList.firstChild);
@@ -79,5 +92,7 @@ function checkUI() {
 itemForm.addEventListener('submit', addItem); // this event activate additem when the button is submitted 
 itemList.addEventListener('click', removeItem); //This event activate function when the red cross is clicked
 clearButton.addEventListener('click', clearItems);
+itemFilter.addEventListener('input', filterItems);
+
 
 checkUI();
