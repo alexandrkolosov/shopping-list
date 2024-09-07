@@ -5,7 +5,13 @@ const clearButton = document.getElementById('clear');
 const itemFilter = document.getElementById('filter');
 
 
-function addItem(evt) {
+function displayItems() {
+    const itemsFromStorage = getItemsFromStorage();
+    itemsFromStorage.forEach(item => addItemToDOM(item));
+    checkUI();
+}
+
+function onAddItemSubmit(evt) {
     evt.preventDefault();
 
     const newItem = inputForm.value;
@@ -13,9 +19,28 @@ function addItem(evt) {
     if (newItem === '') {
         alert('Please add item');
         return;
-    }
+    } 
+
+    //Create item DOM element
+
+    addItemToDOM(newItem);
+
+    //ADD item to local storage 
+
+    addItemToStorage(newItem);
+
+   checkUI();
+
+   inputForm.value = '';
+
+
+
+}
+
+function addItemToDOM(item) {
+ 
    const li = document.createElement('li');
-   li.appendChild(document.createTextNode(newItem));
+   li.appendChild(document.createTextNode(item));
 
    const button = createButton('remove-item btn-link text-red');
    li.appendChild(button);
@@ -24,11 +49,20 @@ function addItem(evt) {
    itemList.appendChild(li);
 
    checkUI();
+}
 
-   inputForm.value = '';
+// Local strorage funtion 
 
+function addItemToStorage(item) {
+    const itemsFromStorage =  getItemsFromStorage();
 
+    // Add new item to array
 
+    itemsFromStorage.push(item);
+
+    // Convert to JSON string and set to localStorage
+
+    localStorage.setItem('items', JSON.stringify(itemsFromStorage));
 }
 
 function createButton(classes) {
@@ -43,6 +77,21 @@ function createIcon(classes) {
     const icon = document.createElement('i');
     icon.className = classes;
     return icon;
+}
+
+
+
+function getItemsFromStorage() {
+    let itemsFromStorage;
+
+    if (localStorage.getItem('items') === null) {
+        itemsFromStorage = [];
+    } else {
+        itemsFromStorage = JSON.parse(localStorage.getItem('items'));
+    }
+
+    return itemsFromStorage;
+
 }
 
 // this is an action which allows us to REMOVE item from a list with using X 
@@ -73,6 +122,8 @@ function filterItems(evt) {
 function clearItems() {
     while (itemList.firstChild) {
         itemList.removeChild(itemList.firstChild);
+
+        checkUI();
     }
 }
 
@@ -87,12 +138,14 @@ function checkUI() {
     }
 }
 
+function init () {
 //Event listener
 
-itemForm.addEventListener('submit', addItem); // this event activate additem when the button is submitted 
+itemForm.addEventListener('submit', onAddItemSubmit); // this event activate additem when the button is submitted 
 itemList.addEventListener('click', removeItem); //This event activate function when the red cross is clicked
 clearButton.addEventListener('click', clearItems);
 itemFilter.addEventListener('input', filterItems);
+document.addEventListener('DOMContentLoaded', displayItems);
+}
 
-
-checkUI();
+init();
